@@ -1,0 +1,21 @@
+.TH CLOSESEGMENT 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_CloseSegment \- detach a shared memory segment
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B unsigned int os_CloseSegment(unsigned int key);
+.SH DESCRIPTION
+.B os_CloseSegment
+detaches a shared memory segment from process's address space.  If no other
+task is mapping this segment in, the kernel will destroy it. Returns
+STATUS_SUCCESS on success.
+
+
+.SH ERRORS
+Returns STATUS_INVALID_SHMSEG if the shared memory segment does not exist. 
+Returns STATUS_GENERAL_ERROR if the shared memory segment is in a faulty state.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR os_CreateSegment "(2), " os_AttachSegment (2)

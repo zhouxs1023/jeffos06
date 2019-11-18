@@ -1,0 +1,23 @@
+.TH PORT_SEND 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+port_send \- send a message on an IPC port
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B int port_send(msg_hdr_t *mh);
+.SH DESCRIPTION
+.B port_send
+sends a message from a port to another port. Returns the size of the data sent
+on success.
+
+.SH ERRORS
+Returns ERR_MEMORY if the message is greater than 0x400000 in size.
+Returns ERR_SENDPORT if the port being sent from does not exist.
+Returns ERR_PERMISSION if the calling task does not own the source port or
+if the destination port will not accept messages from the source port.
+Returns ERR_RECVPORT if the port being sent to does not exist.
+Returns ERR_RESOURCE if a port cannot be found.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR port_create "(2), " port_destroy "(2), " port_recv "(2), " port_option (2)

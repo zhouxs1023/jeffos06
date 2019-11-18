@@ -1,0 +1,43 @@
+#1 [X] Write object manager
+
+#2 [X] support all objects through object manager (wd, th)
+
+#3 [X] Clean up all objects using new object handles (th)
+
+#4 [X] Get shared memory working
+
+#5 [X] Get semaphores working (fr)
+
+#6 [] Implement forking (st)
+
+#7 [] Organize source code (st)
+
+#8 [] Create presentation (sn - mn)
+
+#9 [] Get byte allocator working (some other time)
+
+#10 [] Put security into object manager (some other time)
+
+** Release FCS kernel **
+
+
+#1 [] Document kernel system
+
+#2 [] Designing device drivers document 	
+
+** Release kernel documentation ** 		
+
+
+#1 [] Create a user level development environment 
+		(source, man pages, docs)
+
+#2 [] Create a IO subsystem in user space	
+
+#3 [] Write an IDE driver			
+
+#4 [] Write a FAT16 driver			
+
+#5 [] Port libc					
+
+** Release User Space environment ** 
+

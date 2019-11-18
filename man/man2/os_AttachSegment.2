@@ -1,0 +1,18 @@
+.TH ATTACHSEGMENT 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_AttachSegment \- map a shared memory segment
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B unsigned int os_AttachSegment(unsigned int key);
+.SH DESCRIPTION
+.B os_AttachSegment
+maps an existing shared memory segment into the process's memory space.
+Returns a pointer to the mapped in memory segment.
+
+.SH ERRORS
+Returns 0 if the shared memory segment could not be mapped in.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR os_CreateSegment "(2), " os_CloseSegment (2)

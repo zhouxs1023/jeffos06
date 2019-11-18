@@ -1,0 +1,18 @@
+.TH SLEEP_IRQ 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_sleep_irq \- causes a interrupt handler task to sleep
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B void os_sleep_irq( void );
+.SH DESCRIPTION
+.B os_sleep_irq
+causes the calling task to sleep until the interrupt it is handling occurs.
+This function is only used by hardware device drivers.
+
+.SH ERRORS
+This function always succeeds.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR os_handle_irq "(2), "

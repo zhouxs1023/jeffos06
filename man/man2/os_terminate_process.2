@@ -1,0 +1,21 @@
+.TH TERMINATE_PROCESS 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_terminate_process \- terminates the current task
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B void os_terminate_process( int status );
+.SH DESCRIPTION
+.B os_terminate_process
+causes the calling task to terminate.  The kernel will clean up the tasks
+resources.
+.B status
+is not currently used.
+
+.SH ERRORS
+This function always succeeds.
+.SH "CONFORMS TO"
+GuildOS 1.0
+
+.SH "SEE ALSO"
+.BR os_thread "(2) "

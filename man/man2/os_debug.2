@@ -1,0 +1,15 @@
+.TH DEBUG 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_debug \- throw kernel into the debugger
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B void os_debug( void );
+.SH DESCRIPTION
+.B os_debug
+has the kernel call the debugger thus halting operation of all tasks.
+
+.SH ERRORS
+This call always succeeds.
+.SH "CONFORMS TO"
+GuildOS 1.0

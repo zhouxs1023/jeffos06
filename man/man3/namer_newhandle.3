@@ -1,0 +1,20 @@
+.TH NEWHANDLE 3 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+namer_newhandle \- creates a port to communicate with the namer service.
+.SH SYNOPSIS
+.B #include <namer.h>
+.sp
+.B int namer_newhandle( void );
+.SH DESCRIPTION
+.B namer_newhandle
+creates a port which can connect to the namer service. 
+
+.sp
+Returns port which can connect to the namer on success.
+
+.SH ERRORS
+Returns 0 if a port could not be created.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR namer_delhandle "(3), " namer_register "(3), " namer_find "(3) "

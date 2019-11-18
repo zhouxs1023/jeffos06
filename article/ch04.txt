@@ -1,0 +1,18 @@
+Chapter 4 - User level libraries
+----------
+
+The user level libraries are fairly simplistic.
+
+There are two files in this directory.  The first is the crt0.c file.
+This file contains one function which is the _start() function.  This function
+makes a call to main which will be defined in user code.  This stub
+function must always be linked in first as it will be jumped into
+by the kernel to begin running the process.
+
+The second file is the syscall.c file.  This file contains one system
+call function which is simply an interrupt 22.  This interrupt calls 
+the console system call.  eax is passed in as a pointer to a string
+which is printed to the system console.
+
+Both of these source files are compiled to objects and are used during
+the linking phase of any user code.

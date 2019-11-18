@@ -1,0 +1,24 @@
+Chapter 6 - Creating a disk image out of the binaries
+----------
+
+Once you have compiled all of the binaries and placed them into the build
+directory you will need to create two more files before continueing.
+These files are called STUFF.BIN and STUFF2.BIN.  These files are simply
+containers of empty space to cause alignment of other binaries.  The
+floppy loader expects the user program to be 1k in size.  If the user program
+is not exactly this size then STUFF2.BIN needs to be created and be of such
+a size that when added to USER.BIN the size is 1024 bytes. Also, the
+floppy boot loader expects the kernel boot loader to be 3.5k (3584 bytes) in 
+size.  STUFF.BIN needs to be made of such length that when added to the size
+of the BOOT.BIN (kernel boot loader) file the size will be 3584 bytes. In the
+future I will try to automate this process, but for now this is simply how
+it must be done. Once this is complete the shell program 'go' must be run.
+This will place all of the binary files into one file called 'os.bin'. This
+file can then be writen to disk by one of the following two methods.
+
+If you want to do it from linux you can do the following command:
+
+dd if=os.bin of=/dev/fd0  (places os.bin directly onto the floppy disk)
+
+or from DOS you can obtain the rawrite command and run it and follow its
+directions.

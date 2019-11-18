@@ -1,0 +1,173 @@
+Chapter 1 - Booting into protected mode
+---------
+
+The first step in setting up an operating system on the x86 architecture
+is to switch the machine into protected mode.  Protected mode allows you
+to use hardware protection schemes to provide operating system level security.
+
+The first component which I began working on was the first stage boot loader
+which is located in "JeffOs/loader/first/".
+
+The first stage boot loader is placed on the first sector of the floppy.
+Each sector is 512 bytes.  This is not a lot of room to write all of the
+code required to boot into protected mode the way I would like to so I had to
+break the boot loader into two parts.  Thus the first and second stage floppy
+loader.
+
+After the Power On Self-Test (POST) test this first sector is loaded 
+up into memory location 0000:7C00. I designed the first stage of the floppy
+boot loader to load up all of the files into memory to be executed.
+The first instruction in the boot loader jumps to the boot code.  However,
+between the jump and the boot code are some data structures.  
+
+The first section is the disk parameters. I'm not currently using any of
+this information but will in future versions.  The next set of structures
+contain information on the other data files on the floppy disk. Each structure
+looks like this in assembly:
+
+APCX	DW	0000h		; Specifies CX value for INT 13h BIOS routine
+APDX	DW	0000h		;           DX
+APES	DW	0000h		;           ES
+APBX	DW	0000h		;           BX
+APSZ	DB	0h		; Specifies number of sectors to read in
+APSZ2	DB	0h		; Unused
+
+There are four copies of this structure (APxx, BPxx, CPxx, DPxx).
+
+The INT 13h BIOS call has the following arguments:
+
+ch: Cylinder number to start reading from.
+cl: Sector number to start at.
+dh: Head number of drive to read from (00h or 01h for 1.44M floppy disk drives)
+dl: Drive number (00h for Disk A)
+es: Segment to store the read in sectors at.
+bx: Offset into the segment to read the sectors into.
+ah: Number of sectors to read in.
+al: Function number for INT 13h. (02h is to read in from the disk)
+
+I use the APxx to load the the second stage boot loader. BPxx is being used
+to load the first stage kernel loader.  CPxx is used to load a simple user
+program.  Finally, DPxx is used to load the kernel in.
+
+
+Following the loader structures are two unused bytes which are used to store
+temporary data. SIZE is used but SIZE2 is not currently used.
+
+The boot code follows these structures.  This boot code relocates itself into
+another section of memory. (9000:0000 or 90000h linear)  Once relocated, it
+loads all of the files into memory and then jumps into the beginning of the
+second stage boot loader.
+
+
+The first part of the second stage boot loader contains a macro which is
+used to easily define a Global Descriptor Table (GDT) entry.  In protected mode
+the GDT is used to store information on selectors.  A selector in protected
+mode is refered to by a number stored in any of the segment registers. A 
+selector has the following format:
+
+Bits        Use
+15 - 3      Descriptor Table Index
+2           Table Indicator
+1  - 0      The Requestor Privilege Level
+
+The Descriptor Table Index or (DT) is an index into the GDT.
+The first entry in the GDT is 00h, the second is 08h, then 10h, etc..
+The reason that the entries progress in this manner is because the 3 least
+significant bits are used for other information.  So to find the index
+into the GDT you do a segment & 0xfff8. (DT = Selector & 0xfff8)
+
+The Table Indicator selects whether you are using a GDT or a Local Descriptor
+Table (LDT).  I have not yet had a reason to use LDT's so I will leave
+this information to your own research for now.
+
+Finally, the Requestor Privilege Level is used to tell the processor
+what level of access you would like to have to the selector.
+0 = OS
+1 = OS (but less privileged than 0)
+2 = OS (but less privileged than 1)
+3 = User level
+
+Typically levels 0 and 3 are the only ones used in modern operating systems.
+
+The GDT entries which describe various types of segments have the following
+form:
+
+63 - 56    Upper Byte of Base Address
+55         Granularity Bit
+54         Default Bit
+53         0
+52         Available for Use (free bit)
+51 - 48    Upper Digit of Limit
+47         Segment Present Bit
+46 - 45    Descriptor Privilege Level
+44         System Bit
+43         Data/Code Bit
+42         Conforming Bit
+41         Readable bit
+40         Accessed bit
+39 - 32    Third Byte of Base Address
+31 - 24    Second Byte of Base Address
+23 - 16    First Byte of Base Address
+15 - 8     Second Byte of Limit
+7 - 0      First Byte of Limit
+
+
+The base address is the starting location of the segment descriptor (for code
+or data segments). The limit is the number of bytes or 4k pages.  Whether it
+is bytes or 4k pages depends on the setting of the granularity but.  If the
+granularity bit is set to 0 then the limit specifies the length in bytes. If
+it is set to 1 then the limit specifies the length of the segment in 4k pages.
+
+The default bit specifies whether the code segment is 32bit or 16bit. If it
+is set to 0 then it is 16bit.  If it is set to 1 then it is 32bit.
+
+The present bit is set to one if the segment is currently in memory. This
+is used for virtual paging.
+
+The descriptor privilege level is similar to the RPL.  The DPL simply
+states at what protection level the segment exists at.  The values are
+the same as for the RPL.
+
+The system bit is used to specify whether the segment contains a system segment.
+It is set to 0 if it is a system(OS) segment.
+
+The data/code bit is used to specify whether the segment is to be used
+as a code segment or as a data segment.  A code segment is used to 
+execute code from and is not writeable.  A data segment is used for stacks
+and program data.  It's format is slightly different from the code segment
+depicted above.
+
+The readable bit is used to specifiy whether information can be read from
+the segment or whether it is execute only.
+
+The next part of the second stage floppy boot loader contains the
+code which is used to enable the A20 address line.  This address line
+allows you to access beyond the 1MB limit that was imposed on normal
+DOS real mode operation. For a discussion of this address line I recommend
+looking at the intel architecture books.
+
+Once enabled the GDT that exists as data at the end of the assembly file
+is loaded into the GDT register. This must be done before the switch into
+protected mode.  Other wise any memory accesses will not have a valid
+selector described for them and will cause a fault. (I learned this from
+experience.)
+
+Once this is completed the move is made to protected mode by setting
+the protected mode bit in the CR0 register to 1.
+
+Following the code which enables protected mode, there is data which
+represents a far call into the next portion of the second stage boot loader.
+This causes a new selector to be used for CS as opposed to an undefined one.
+
+The code that is jumped into simply sets up the various selectors for the
+data segments.
+
+There is then some simple debugging code which prints to the screen. This
+was used for myself and can be removed.
+
+The stack segment is then set up along with the stack pointer. I have placed
+the stack at 90000h.
+
+Finally I push the value for the stack onto the stack (to be retrieved by
+the kernel) and then call linear address 100080h which contains the first
+stage loader for the kernel.

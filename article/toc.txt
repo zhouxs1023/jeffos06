@@ -1,0 +1,9 @@
+Forward                           Forward to article
+Introduction                      Introduction to the article
+Chapter 1                         Floppy Boot Loader
+Chapter 2                         Kernel Boot Loader
+Chapter 3                         Kernel
+Chapter 4                         User Level Libraries
+Chapter 5                         Usere Level Code
+Chapter 6                         Creating a disk image out of the binaries
+Conclusion                        Conclusion to article

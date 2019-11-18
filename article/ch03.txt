@@ -1,0 +1,197 @@
+Chapter 3 - The Kernel
+----------
+
+The kernel is where all of the fun begins.  Unfortunately, this is the
+place that is least complete for me.  However, there is enough here to
+demonstrate the beginnings of what needs to be done to build a viable kernel
+for your own work.
+
+The kernel boot loader created the kernel page table and then jumped into
+the kernel at _start(); _start() then sets up the console, clears it, and
+displays the message "Main kernel loaded.".  Once this is done it runs
+the memory manager initialization routine 'kinit_page()'.
+
+The memory manager initialization routine begins by initializing a structure
+called the PMAT.  The PMAT is a giant bit field (2048 bytes), where each bit
+represents one page of physical memory.  If a bit is set to one, the
+corresponding page of memory is considered allocated.  If the bit is set to
+zero then it is considered unallocated. Once this array is initialized the
+memory management code sets aside the chunks of physical memory which are
+already in use.  This include the system BUS memory areas, as well as
+the location of the kernel itself in physical memory.  Once this is completed
+the memory manager returns to the _start() function so that it can proceed
+with kernel initialization.
+
+The _start() function then calls a tempory function which I am using now to 
+allocate memory which is use by the user program loading in by the first
+stage floppy loader.  This will go away after I add the loading of 
+processes off of disk during run time. This function sets aside the physical
+memory which is located at 20000h linear.
+
+Now that the basic memory system is set up the _start() function calls the 
+kinit_task() function.  kinit_task() sets up the kernel task so that it
+can run as a task rather than as a the only process on the system.
+
+kinit_task() is really a shell function which calls two other functions: 
+kinit_gdt() and kinit_ktask(); kinit_gdt() initializes a new kernel GDT
+which is to be used by the kernel rather than the previous temporary one
+which was set up by the second stage floppy boot loader. Once the new location
+for the gdt is mapped into memory several selectors are added to it.
+Kernel Code and Data selectors are added.  Also, User Code and Data selectors
+are added. Once these selectors are put into place, the new gdt is placed
+in the gdt register on the processor so that it can be used.
+
+kinit_task() now calls the kinit_ktask() function.  This task creates a task
+which the kernel code will be executed as. The first thing this function does
+is to clear out the kernels task list.  This list contains a list of tasks
+on the system. Next a 4k page is allocated for the kernel task segment.
+The current executing task is then set to the kernel task. Next the task
+segment is added to the GDT. This task segment has the following structure
+and is filled out for the kernel with the following values by me. In fact
+all tasks will start out with these settings.
+
+
+struct TSS {
+    ushort link;            // set to 0
+    ushort unused0;
+    ulong esp0;             // set to the end of the task segment page
+    ushort ss0;             // set to SEL_KDATA (Kernel Data segment)
+    ushort unused1;
+    ulong esp1;             // set to 0
+    ushort ss1;             // set to 0
+    ushort unused2;
+    ulong esp2;             // set to 0
+    ushort ss2;             // set to 0
+    ushort unused3;
+    ulong cr3;              // set to the physical address of this tasks page 
+                            // tables
+    ulong eip;              // set to the entry point to this tasks code
+    ulong eflags;           // set to 0x4202
+    ulong eax, ecx, edx, ebx, esp, ebp, esi, edi; // set to garbage values
+    ushort es;              // set to SEL_KDATA (Kernel data segment)
+    ushort unused4;
+    ushort cs;              // set to SEL_KCODE (Kernel code segment)
+    ushort unused5;
+    ushort ss;              // set to SEL_KDATA
+    ushort unused6;
+    ushort ds;              // set to SEL_KDATA
+    ushort unused7;
+    ushort fs;              // set to SEL_KDATA
+    ushort unused8;
+    ushort gs;              // set to SEL_KDATA
+    ushort unused9;
+    ushort ldt;             // set to 0
+    ushort unused10;
+    ushort debugtrap;       // set to 0
+    ushort iomapbase;       // set to 0
+};
+
+
+The link field is used by the processor when an interrupt is called.  The
+processor places a pointer to the task segment which was running prior to
+the interrupt.  This is useful for determining access rights based on the
+calling process.
+
+The espx and ssx parameters are used to store a pointer to a stack which will 
+be used when a task with a lower privilege level tries to access a high level
+privilege area.
+
+The cr3 parameter is used to store a pointer to the physical address of this
+tasks page table.  Whenever this task is switched to, the processor will
+load the value stored in cr3 into the cr3 register. This means that each task
+can have a unique set of page tables and mappings.
+
+The eax,ebx, etc.. registers are all set to a garbage value as they are
+unitialized and will only gain values once they are used. When the processor
+switches to this task these parameters will be loaded into their respective
+processor registers.
+
+The cs, es, ss, ds, fs, and gs parameters are all set to meaningful values
+which will be loaded into their respective processor registers when this
+task is switched to.
+
+As I am not using a local descriptor I set this parameter to 0 along with
+the debugtrap and iomapbase parameters.
+
+As I have mentioned every time a task is switched to the processor will
+load all of the parameters from the task segment into their respective
+registers.  Likewise, when a task is switched out of, all of the registers
+will be stored in their respective parameters.  This allows tasks to
+be suspended and to restart with the state they left off at.
+
+Switching tasks will be discussed later when the point in the kernel where
+this takes place at is reached.
+
+Once this task state segment is created it is necessary to create an entry
+in the GDT which points to this task segment. The format of this 64 bit entry 
+is as follows:
+
+63 - 56    Fourth Byte of Base Address
+55         Granularity Bit
+54 - 53    0
+52         Available for use (free bit)
+51 - 48    Upper Nibble of Size
+47         Present in Memory Bit
+46 - 45    Descriptor Privilege Level
+44         System Built
+43         16/32 Bit
+42         0
+41         Busy Bit
+40         1
+39 - 32    Third Byte of Base Address
+31 - 24    Second Byte of Base Address
+23 - 16    First Byte of Base Address
+15 - 8     Second Byte of Segment Size
+7 - 0      First Byte of Segment Size
+
+As you have probably noticed, this structure is very similar to the code 
+segment descriptor. The differences are the 16/32 bit, and the Busy Bit.
+
+The 16/32 Bit specifies whether the task state segment is 16 bit or 32 bit.  We
+will only be using the 32 Bit task segment (Bit = 1). The 16 bit task state
+segment was used for the 286 and was replaced by a 32 bit task state segment
+on the 386+ processors.
+
+The busy bit specifies whether the task is currently busy.  
+
+Once the kernel task is allocated, a new kernel stack is allocated and
+made active. This allows the stack to be in a known and mapped in location
+which uses the memory manager of the kernel.
+
+The user tasks is then created in a similar fashion as the kernel task.
+In this current implementation the user task is located at 0x20000.  It's
+stack is located at 0x2107c.  Currently, this user task operates with 
+OS level privilege.  I encountered some problems when changing its selectors
+to user entries in the GDT.  As soon as I fix this problem I will post a
+fix on my web site. After the user task is created it is added to the task
+queue to be switched to once the scheduler starts.
+
+Now that the kernel task and a user task (though running with kernel privilege
+level) have been created it is necessary to set up the interrupt tables.  This
+is done by a call to the kinit_idt() function.
+
+kinit_idt() starts by setting all of the interrupts to point to a null 
+interrupt function.  This means that for most interrupts a simple return occurs.
+However, interrupt handlers for the timer as well as for one system call.
+Also, interrupts are set up to handle the various exceptions. Once this table
+is filled out the interrupt descriptor table (IDT) is loaded into the idt 
+register. The interrupts are then enabled to allow them to be called.
+
+The timer interrupt handler is a simple function which calls a task switch
+every time the hardware timer fires.
+
+The system call (interrupt 22h) is called, the handler will print out on
+the console the string which is pointed to be the eax register.
+
+The exception handling routine will dump the task registers and then hang
+the system. The jump.S file in jeffos/kernel/ contains the assembly wrappers
+which are called when an interrupt occurs.  These wrapper functions then
+call the C handler functions.  
+
+Now that the IDT is set up and interrupts are occuring task switches can occur.
+These occur when the swtch() function is called in the task.c file.  The swtch()
+function locates the next task in its queue and does a call to the selector
+address of the new task.  This causes the processor to look up the selector
+and switch to the new task.
+
+You now have a very simple multi-tasking kernel.

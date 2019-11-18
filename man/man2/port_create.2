@@ -1,0 +1,21 @@
+.TH PORT_CREATE 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+port_create \- create a IPC port
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B unsigned int port_create(int restrict);
+.SH DESCRIPTION
+.B port_create
+creates an IPC port for the current task.  It returns the port number which
+was created.  Setting
+.B restrict
+to non zero causes this port to only be able to communicate with port
+.B restrict
+
+.SH ERRORS
+Returns 0 if a port could not be created.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR port_destroy "(2), " port_send "(2), " port_recv "(2), " port_option (2)

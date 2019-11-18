@@ -1,0 +1,27 @@
+.TH FIND 3 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+namer_find \- finds a registered service
+.SH SYNOPSIS
+.B #include <namer.h>
+.sp
+.B int namer_find( int nh, char *name );
+.SH DESCRIPTION
+.B namer_find
+finds the port a service named
+.B name
+resides on.
+
+.B nh 
+specifies the port which can connect to the namer.
+.B name
+is the name of the service that is being requested.
+
+.sp
+Returns the port the service is listening on if successful.
+
+.SH ERRORS
+Returns 0 if the service could not be found.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR namer_delhandle "(3), " namer_register "(3), " namer_find "(3) "

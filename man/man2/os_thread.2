@@ -1,0 +1,24 @@
+.TH THREAD 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_thread \- creates a new user thread
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B void os_thread( void *addr, unsigned int arg );
+.SH DESCRIPTION
+.B os_thread
+creates a new thread which begins execution at
+.B addr
+.sp
+.B arg
+is currently not used, but will be implemented later to allow a new
+thread to be based off of a shared memory segment and to have a new
+address space created for it.
+
+.sp
+Returns the task id of the new thread.
+
+.SH ERRORS
+Returns 0 on error.
+.SH "CONFORMS TO"
+GuildOS 1.0

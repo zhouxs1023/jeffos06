@@ -1,0 +1,17 @@
+Chapter 5 - User code
+----------
+
+The user code is stored in one file called test.c  This file is located in
+the /user/ directory.  All this code does is call the console system call
+function provided by the library, wait a short amount of time, and call it again
+in a non-terminating loop. (Good thing, as I don't handle task termination yet)
+
+The important thing to note is that when linking this user process is
+set to have a text segment of 20000h linear.  Also the crt0.o and syscall.o
+files are linked in as well.  crt0.o is linked in first to insure that its
+_start() function is at 20080h so it will be jumped into by the kernel. In
+truth, _start() is the real main as opposed to the main() everyone is used
+to dealing with.
+
+This code is the task which is created and run alongside the kernel, as
+described in chapter 3.

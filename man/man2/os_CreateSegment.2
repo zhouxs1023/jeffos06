@@ -1,0 +1,18 @@
+.TH CREATESEGMENT 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_CreateSegment \- create a shared memory segment
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B unsigned int os_CreateSegment(unsigned int LenInPages);
+.SH DESCRIPTION
+.B os_CreateSegment
+creates a shared memory segment of size LenInPages and returns the key
+to the segment.
+
+.SH ERRORS
+Returns 0 if a shared memory segment could not be created.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR os_AttachSegment "(2), " os_CloseSegment (2)

@@ -1,0 +1,20 @@
+.TH HANDLE_IRQ 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_handle_irq \- sets up a task to handle a hardware interrupt
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B void os_handle_irq( int irq );
+.SH DESCRIPTION
+.B os_sleep_irq
+sets the calling task up to handle all interrupt requests that come in on
+a hardware interrupt.
+.B irq
+can be a value from 0 to 16.  A task may only handle one interrupt number.
+
+.SH ERRORS
+This function always succeeds.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR os_sleep_irq "(2) "

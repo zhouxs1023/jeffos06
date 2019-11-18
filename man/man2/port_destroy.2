@@ -1,0 +1,20 @@
+.TH PORT_DESTROY 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+port_destroy \- destroy a IPC port
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B int port_destroy(int port);
+.SH DESCRIPTION
+.B port_destroy
+destroys an existing port.  The current task must own the port to be destroyed
+or else an error is returned. ERR_NONE is returned if the call succeeds.
+
+.SH ERRORS
+Returns ERR_PERMISSION if the calling task does not own the port.
+Returns ERR_RESOURCE if the port does not exist or the port is the master
+of another slave port still in existance.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR port_create "(2), " port_send "(2), " port_recv "(2), " port_option (2)

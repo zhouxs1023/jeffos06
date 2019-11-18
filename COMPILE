@@ -1,0 +1,14 @@
+To compile the kernel do a:
+
+make clean
+make
+
+
+To create a floppy image do a:
+
+make floppy
+
+This will create a floppy binary image in kernel.img.  You can put this onto
+your floppy by doing a:
+
+dd if=kernel.img of=/dev/fd0

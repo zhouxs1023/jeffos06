@@ -1,0 +1,54 @@
+Introduction
+------------
+
+
+Throughout this document I assume a certain level of knowledge on the part 
+of the reader.  This knowledge includes c and assembly language programming, 
+and x86 architecture.
+
+The development requirements for the GuildOS operating system are:
+
+An ELF compiler
+  I used the gnu ELF compiler which comes with linux.  It is possible
+  to use other ELF cross compilers on other systems as well.
+
+a386 assembler
+  This can be obtained from:
+
+Eric Isaacson
+416 E. University Ave.
+Bloomington IN 47401-4739
+71333.3154@compuserve.com
+
+or call 1-812-335-1611
+A86+D86+A386+D386 is $80
+Printed maual $10
+
+This is a really nice assembler.  Buy a copy.  I did.
+
+  It is also possible to convert the boot loader assembly code to another
+  assembler.
+
+A 486+ machine
+  You must have a machine to test the OS on.
+
+Great books to read to gain an understanding of the various topics presented
+in the following pages are:
+
+Protected Mode Software Architecture by Tom Shanley from MindShare, Inc.
+ISBN 0-201-55447-X  $29.95 US
+
+This book covers the protected mode architecture of the x86.  It also
+explains the differences between real mode and protected mode programming.
+This book contains much of the information which is in the Intel Operating
+Systems Developers guide, but also explains things much more in depth.
+
+Developing Your Own 32-Bit Operating System by Richard A. Burgess from SAMS
+Publishing.  ISBN  0-672-30655-7
+
+This book covers the development of a complete 32-bit OS.  The author also
+creates his own 32-bit assembler and compiler.  Considerable portions of
+the code are written in asm, but there is still quite a bit in C.
+
+The entire Intel architecture series and their OS developers guides which
+are available from their web site for free.

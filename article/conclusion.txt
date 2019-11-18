@@ -1,0 +1,16 @@
+Conclusion
+----------
+
+The kernel contained within is far from complete.  However, it is a first
+step towards creating a real protected mode operating system.  It is also
+enough to begin workig with, or to refer to during you own work on
+a protected mode operating system.  Doing this work is simply both one
+of the most rewarding things you will ever do, and one of the most frustrating.
+Many a night has been spent at the local tavern telling war stories about this
+stuff.  But in the end, it has all been great fun.
+
+I wish you all the best of luck!
+
+Jeff Thompson
+jwthomp@cu-online.com
+http://www.cu-online.com/~jwthomp/

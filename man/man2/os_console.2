@@ -1,0 +1,15 @@
+.TH CONSOLE 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_console \- send a message to the kernel console
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B void os_console(char *message);
+.SH DESCRIPTION
+.B os_console
+displays a message onto the kernel console.  This is useful when combined
+with serial debugging.
+.SH ERRORS
+This function always succeeds.
+.SH "CONFORMS TO"
+GuildOS 1.0

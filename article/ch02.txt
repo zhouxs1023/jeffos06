@@ -1,0 +1,141 @@
+Chapter 2 - The first stage kernel boot loader
+----------
+
+The first stage kernel boot loader is located in \boot.
+
+First some notes on what is happening with the first stage boot loader.  The
+boot loader is compiled to ELF at a set TEXT address so that I can 
+jump into the code and have it execute for me.  In the makefile I specify
+the text address to be 10080.  The first 80h bytes are used as the ELF header.
+I completely ignore this information and jump directly into linear memory
+address 10080h. It is my understanding that newer versions of the ELF compiler
+have a slightly different header length and may cause this number to need to
+be modified. This can be determined by using a dissasembler (i.e. DEBUG in DOS)
+to determine where the text segment is beginning.
+
+The two files of importance to the boot loader are main.c and mem.c.
+
+main.c contains the function void _start(unsigned long blh);
+This function must be the first function linked in.  So main.c must be
+the first file which is linked and _start() must be the first function in it.
+This guarantees that _start will be at 10080h. The parameter blh is the
+value which was pushed in by the second stage boot loader.  This originally
+had meaning, but no longer does.
+
+The first thing that _start does is to call kinit_MemMgmt which is the
+initialization routine for memory.
+
+The first thing that kinit_MemMgmt does is set nMemMax to 0xfffff. This
+is the maximum number of bytes on the system. This value is 1MB.  kinit_MemMgmt
+then calls kmemcount which attempts to calculate the amount of free memory on 
+the system.  Currently this routine does not work properly and assumes
+that there is 2MB of free memory on the system.  This is sufficient for now
+but needs to be fixed in the future.
+
+kinit_MemMgmt then calls kinit_page which sets of the page tables for the 
+kernel. 
+
+Paging is the mechanism used to define what memory a task is able to access.
+This is done by creating a "virtual" memory space which the task accesses.
+Whenever an access to memory occurs the processor looks into the page tables
+to determine what "real" physical memory is pointed to by this memory location.
+For example, the kernel could designate that each task will get 32k (8 pages)
+of memory to use for the stack. Without using paged memory each of these
+memory locations would occur at a different address. However, by using paging
+you can map each of these physical memory allocations to a paged address
+which allows each of these allocations to appear to occur at the same location.
+
+The page tables are broken up in the following manner.  First is the page
+directory.  It is composed of 1024 entries which have the following properties:
+
+31 - 12    Page Table Base Address
+11 - 9     Unused (Free bits)
+8          0
+7          Page Size Bit
+6          0
+5          Accessed Bit
+4          Page Cache Disable Bit
+3          Page Write Through Bit
+2          User/Supervisor Bit
+1          Read/Write Bit
+0          Page Present Bit
+
+The Page Table Base address is an index to the page table which contains
+information about this memory location. When a memory location is accessed
+the most significant 10 bits are used to reference one of the 1024 entries in 
+the page directory. This entry will point to a page table which has a physical
+memory address equal to the Page Table Base Address.  This table is then 
+referenced to one of its 1024 entries by the 21 - 12 bits of the memory address.
+
+The Page Size Bit tells whether each page is equal to (Bit = 0) 4kb or 
+(Bit = 1) 4MB.  
+
+The accessed bit is used to show whether the page has ever been accessed.  
+Once set to 1, the OS must reset it to 0. This is used for virtual paging.
+
+The Page Cache Disable Bit and Page Write Bit are not currently used by me, 
+so I will leave its definition as an excersize to the reader. (Enjoy)
+
+The User/Supervisor Bit specifies whether access to the page table is restricted
+to access by tasks with privilege level 0,1,2 or 3.  If the bit is set to 0 
+then only tasks with level 0, 1, or 2 can access this page table.  If the bit
+is set to 1, then tasks with level 0, 1, 2, or 3 can access this page table.
+
+The Read/Write bit is used to specify whether a user level task can write
+to this page table. If it is set to 0 then it is read only to "User" tasks.
+If it is set to 1 then it is read/writeable by all tasks.
+
+Finally, the Present Bit is used to specify whether the page table is present
+in memory.  If this is set to one then it is.
+
+
+Once the page directory is referenced, the offset into the page table is 
+selected. Using the next 10 bits of the memory reference. Each page table
+has 1024 entries with each entry having the following structure:
+
+31 - 12    Page Base Address
+11 - 9     Unused (Free bits)
+8 - 7      0
+6          Dirty Bit
+5          Accessed Bit
+4          Page Cache Disable Bit
+3          Page Write Through Bit
+2          User/Supervisor Bit
+1          Read/Write Bit
+0          Page Present Bit
+
+The Page Base Address points to the upper 20 bits in physical memory where
+the memory access points to.  The lower 12 bits are taken from the original
+linear memory access.
+
+The Diry, Accessed, Page Cache, and Page Write Through Bits are all used for
+virtual memory and other areas which I have not yet been concerned yet.  So
+they are relegated to the reader. (For now)
+
+The remaining three bits behave just as in the page directory except that
+they apply to the physical memory page as opposed to a page table. All
+kernel pages are set to have Supervisor, Read/Write, and Page Present bits
+set.  User pages do not have the supervisor bits set.
+
+
+The code in kinit_page creates the page directory in the first of the three
+physical pages that it set aside.  The next page is used to create a low (user)
+memory area of 4MB (One page table of 1024 entries points to 1024 4kb pages, 
+Thus 4MB).  The third page is used to point to high (OS) memory.
+
+The kinit_page function sets all of the low page memory equal to physical
+memory. This means that there is a one to one correlation for the first
+4MB of memory to paged memory.  kinit_page then maps in ten pages
+starting at 70000h linear into 0x80000000. Entry number 0 of the page directory
+is then set to point to the low page table.  Entry number 512 is set to
+point to the high page table.
+
+Finally the kinit_page function places the address of the page directory
+into the cr3 register.  This tells the processor where to look for the page
+tables.  Finally, cr0 has its paging bit turned on which informs the processor
+that memory accesses should go through the page table rather than just
+being direct physical memory accesses.
+
+After this the _start function is returned to. k_start() has been set to 
+0x80000080 which points to the the _start() function in the main kernel.
+_start in the boot code calls this function which starts the real kernel off.

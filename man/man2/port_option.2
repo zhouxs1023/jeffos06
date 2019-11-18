@@ -1,0 +1,53 @@
+.TH PORT_OPTION 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+port_option \- sets the options of an IPC port
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B int port_option(int port, int opt, int arg);
+.SH DESCRIPTION
+.B port_option
+sets various options on a port. The options which can be set are:
+
+.sp
+.B PORT_OPT_NOWAIT
+.br
+Not currently used. This will be used to set whether a port should block.
+
+.sp
+.B PORT_OPT_SETRESTRICT
+.br
+Causes the
+.B port
+to only be able to communicate with port
+.B arg
+
+.sp
+.B PORT_OPT_SETDEFAULT
+.br
+Not currently used.
+
+.so
+.B PORT_OPT_SLAVE
+.br
+Causes the
+.B port
+to route all of its messages to the port specified by
+.B arg.
+If
+.B arg
+is set to 0 then the master will no longer receive these messages.
+
+
+.sp
+Returns
+.B ERR_NONE
+on success.
+
+.SH ERRORS
+Returns ERR_RESOURCE if a port cannot be found.
+Returns ERR_PERMISSION if the calling task does not own the port.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR port_create "(2), " port_destroy "(2), " port_send "(2), " port_option (2)

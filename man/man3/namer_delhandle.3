@@ -1,0 +1,21 @@
+.TH DELHANDLE 3 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+namer_delhandle \- destroys port to namer
+.SH SYNOPSIS
+.B #include <namer.h>
+.sp
+.B int namer_delhandle( void );
+.SH DESCRIPTION
+.B namer_delhandle
+deletes a namer connection port.
+
+.sp
+Returns ERR_NONE on success.
+
+
+.SH ERRORS
+Returns ERR_PERMISSION or ERR_RESOURCE if a port could not be created.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR namer_delhandle "(3), " namer_register "(3), " namer_find "(3) "

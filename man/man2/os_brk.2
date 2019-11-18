@@ -1,0 +1,17 @@
+.TH BRK 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+os_brk \- add memory to the task
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B unsigned int os_brk(int LenInPages);
+.SH DESCRIPTION
+.B os_brk
+allocates LenInPages more memory for the task. Each page is 4096 bytes.
+This memory is added on at the end of the used memory in the task.
+Returns 0 on success. 
+
+.SH ERRORS
+Returns -1 if the memory could not be added.
+.SH "CONFORMS TO"
+GuildOS 1.0

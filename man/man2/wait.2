@@ -1,0 +1,16 @@
+.TH DEBUG 2 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+wait \- releases the processor
+.SH SYNOPSIS
+.B #include <sys/syscall.h>
+.sp
+.B void wait( void );
+.SH DESCRIPTION
+.B wait
+causes the calling task to voluntarily release the processor, thus causing
+a task switch.
+
+.SH ERRORS
+This call always succeeds.
+.SH "CONFORMS TO"
+GuildOS 1.0

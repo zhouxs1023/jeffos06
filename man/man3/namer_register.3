@@ -1,0 +1,28 @@
+.TH REGISTER 3 "13 June 1998" "GuildOS" "GuildOS Programmer's Manual"
+.SH NAME
+namer_register \- registers a service with the namer
+.SH SYNOPSIS
+.B #include <namer.h>
+.sp
+.B int namer_register( int nh, int port, char *name );
+.SH DESCRIPTION
+.B namer_register
+registers a service with the namer so other tasks can find the service
+and which port it listens on.
+
+.B nh 
+specifies the port which can connect to the namer.
+.B port
+is the service port to register.
+.B name
+is the name of the service listening on the port.
+
+.sp
+Returns ERR_NONE on success.
+
+.SH ERRORS
+Returns ERR_RESOURCE if the service could not register itself.
+.SH "CONFORMS TO"
+GuildOS 1.0
+.SH "SEE ALSO"
+.BR namer_delhandle "(3), " namer_register "(3), " namer_find "(3) "

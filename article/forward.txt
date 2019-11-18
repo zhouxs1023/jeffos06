@@ -1,0 +1,124 @@
+Forward
+------------
+
+About two months ago I decided to begin learning about developing an operating 
+system from the ground up.  I have been involved in trusted operating systems 
+development for over two years now but have always done my work with 
+pre-existing operating systems.  Mucking with this driver model, decyphering
+that streams implementation, loving this, hating that.  I decided it was time
+to begin fresh and start really thinking about how to approach the design
+of one, so that I would be happy with every part.  At least if I wasn't, I
+would only be calling myself names.
+
+This article is the first tentative step in my development of an operating
+system.  What is here is not really much of a kernel yet.  The big focus
+of this article will be getting a system up and running in protected mode
+with a very minimal kernel.  I stress minimal.  I have been asked repeatedly
+what my design goals for this operating system are.  The fact is the 
+operating system itself was the goal for this part.  There was simply to
+much that I didn't know about this stage of the development to go on
+designing something.  It would be like asking a kindergarten fingerpainter
+what her final masterpiece was going to look like.
+
+However, now that I have this phase reasonably done, it is time to begin
+thinking about such issues as: a security subsystem, a driver subsystem, as
+well as developing a real task manager and a real memory manager.  Hopefully,
+by the next phrack I will be able to not only answer what I want for these
+topics but have also implented many of them.  This will leave me with a 
+much more solid kernel that can be built upon.
+
+So, why write this article?  There are several reasons. First, writing down
+what you have done always help solidify your thoughts and understanding.
+Second, having to write an article imposes a deadline on me which forces
+me to get the job done.  Finally, and most importantly I hope to give
+out enough knowledge that others who are interested in the subject can
+begin to do some work in it.
+
+One comment on the name.  JeffOS is not going to be the final name for
+this OS. In fact several names have been suggested.  However, I have
+no idea yet what I want to call it, mostly because it just isn't solidified
+enough for a name.  When its all said and done, I do hope I can come up
+with something better than JeffOS.  For now, getting a real working kernel
+is more important than a real working name.
+
+I hope that you find the following information interesting, and worth 
+investigating further.
+
+Cheers,
+
+Jeff Thompson
+aka Mythrandir
+
+PS: Some words on the Cryptography article.  First a thank you for all of the
+letters that I received on the article.  I am happy to find that many people
+found the article interesting.  For several people it rekindled an old interest
+which is always great to hear. However, for several people I have unfortunate
+news as well.  The next article in the series will have to be postponed for
+a few issues until I complete this operating system.  As is with many people,
+I have been caught by a new bug (The OS bug) and have set myself up to
+be committed to the work for some time.  I am of course still interested
+in discussing the topic with others and look forward to more email on the 
+subject.
+
+
+The winners of the decryption contest were:
+
+1st message:
+1st) Chaos at chaos@vector.nevtron.si
+2nd) Oxygen at oxygen@james.kalifornia.com
+
+Solution:
+The baron's army will attack at dawn. Ready the Templar knights and
+strike his castle while we hold him.
+
+2nd message:
+
+1st) Chaos
+
+Solution:
+MULTICAST PROTOCOLS HAVE BEEN DEVELOPED TO SUPPORT GROUP COMMUNICATIONS
+THESE PROTOCOLS USE A ONE TO MANY PARADIGM FOR TRANSMISSION TYPICALLY
+USING CLASS D INTERNET PROTOCOL ADDRESSES TO SPECIFY SPECIFIC MULTICAST GROUPS
+
+Also, there is one typo in my article.  The book which was written without the 
+letter 'e' was not The Great Gatsby, but rather Gadsby.  Thanks to Andy 
+Magnusson for pointing that out.
+
+
+
+Great job guys!
+
+
+Acknowledgements:
+
+I owe a certain debt to two people who have been available to me during
+my development work.  Both have done quite a bit of work developing
+their own protected mode operating systems.  I would like to thank
+Paul Swanson of the ACM@UIUC chapter for helping solve several bugs
+and for giving me general tips on issues I encountered.  I would also
+like to thank Brian Swetland of Neoglyphics for giving me a glimpse of his 
+operating system.  He was also nice enough to allow me to steal some of his 
+source code for my use.  This source include the console io routines which 
+saved me a great deal of time.  Also, the i386 functions were given to me by 
+Paul Swanson which has made a lot of the common protected mode instructions 
+easily useable.
+
+
+Following new releases and information on this operating systems work.
+I am currently redoing my web site and will have it up by Feb 1, 1998.
+I will be including this entire article on that site along with all
+updates to the operating system as I work on it.  One of the first things
+that I will be doing is rewriting all of the kernel.  A large part of
+what is contained within these pages was a learning experience. Unfortunately,
+one consequence of trying to get this thing done was it becoming fairly messy
+and hackish.  I would like to clean it up and begin to build upon it.  Having
+a good code base will be invaluable to this. So please watch for the next, and
+future releases of this code and feel free to contact me with any feedback
+or questions.  I will do my best to help.  I won't be able to answer every
+question but I will certainly try.  Also, please be patient as I have a very
+busy schedule outside of this project and am often times caught up by it.
+
+I can be reached at:
+jwthomp@cu-online.com
+and my web site is at:
+http://www.cu-online.com/~jwthomp/ (Up Feb 1, 1998)
